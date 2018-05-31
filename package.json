@@ -16,6 +16,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "array-uniq": "^2.0.0",
     "axios": "^0.15.3",
     "clean-webpack-plugin": "^0.1.19",
     "clipboard": "^1.5.12",

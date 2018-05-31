@@ -42,6 +42,8 @@
                 <Input v-model="text"  type="textarea" placeholder="待替换的文本"></Input>
                 <Input v-model="replacedText"  type="textarea" placeholder="替换的结果"></Input>
                 <Button type="text" @click="addShow = !addShow">添加</Button>
+                {{typeof shiledWords}}
+                {{shiledWords}}
                 <Input v-model="shiledWords"  type="textarea" placeholder="当前屏蔽词"></Input>
                 <Input v-model="theAddWords" v-show="addShow" type="textarea" placeholder="添加的屏蔽词"></Input>
                 <Button type="text" @click="saveWordsLocal">保存</Button>
@@ -59,13 +61,13 @@
                 myWords: '',
                 theAddWords: '',
                 addShow: true,
-                
+                nameTags: {},
             }
         },
         computed: {
             shiledWords: function () {
                 const defaultWords = ['习'];
-                return defaultWords.concat(this.myWords);
+                return defaultWords.concat(this.myWords).filter((i) => {return i;});
             },
             replacedText: function() {
                 let textArr = this.text.split('');
@@ -81,8 +83,8 @@
             saveWordsLocal() {
                 let addWords = this.theAddWords.split('');
                 addWords = addWords.concat(this.myWords);
-                chrome.storage.sync.set({words: addWords}, () => {
-                    this.$Message.success('保存成功');
+                chrome.storage.sync.set({words: [...new Set(addWords)]}, () => {
+                    this.$Message.success('保存成功' + addWords);
                     this.theAddWords = '';
                     this.getWordLocal();
                 });
@@ -92,10 +94,20 @@
                     this.myWords = items.words;
                 });
             },
-            
+            getNameTag() {
+                chrome.storage.sync.get(['nameTag'], (items) => {
+                    this.nameTag = items.nameTag;
+                });
+            },
+            setNameTag () {
+                chrome.storage.sync.set({words: addWords}, () => {
+                    this.$Message.success('保存成功');
+                    this.theAddWords = '';
+                    this.getNameTag();
+                });
+            }
         },
         created() {
-            this.saveWordsLocal();
             this.getWordLocal();
         }
     };
